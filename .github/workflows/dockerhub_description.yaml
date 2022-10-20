@@ -15,18 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Docker Hub Description
-        uses: peter-evans/dockerhub-description@v3
+        uses: peter-evans/dockerhub-description@v3.1.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: fischerscode/flutter
-          readme-filepath: ./Readme.md
+          repository: leobastiani/flutter
+          readme-filepath: ./README.md
           short-description: ${{ github.event.repository.description }}
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: fischerscode/flutter-cache
-          readme-filepath: ./Readme.md
+          repository: leobastiani/flutter-cache
+          readme-filepath: ./README.md
           short-description: ${{ github.event.repository.description }}

@@ -1,6 +1,6 @@
-ARG flutterTag=stable
+ARG flutterVersion=stable
 
-FROM --platform=$BUILDPLATFORM fischerscode/flutter:$flutterTag
+FROM --platform=$BUILDPLATFORM leobastiani/flutter:$flutterVersion
 
 USER root:root
 RUN apt-get update && apt-get install -y sudo && \
