@@ -1,6 +1,4 @@
-ARG flutterVersion=stable
-
-FROM --platform=$BUILDPLATFORM leobastiani/flutter:$flutterVersion
+FROM --platform=$BUILDPLATFORM leobastiani/flutter:stable
 
 USER root:root
 RUN apt-get update && apt-get install -y sudo && \

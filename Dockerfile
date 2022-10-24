@@ -10,11 +10,9 @@ USER flutter:flutter
 
 WORKDIR /home/flutter
 
-ARG flutterVersion=stable
+ADD https://api.github.com/repos/flutter/flutter/compare/stable...stable /dev/null
 
-ADD https://api.github.com/repos/flutter/flutter/compare/${flutterVersion}...${flutterVersion} /dev/null
-
-RUN git clone https://github.com/flutter/flutter.git -b ${flutterVersion} flutter-sdk
+RUN git clone https://github.com/flutter/flutter.git -b stable flutter-sdk
 
 RUN flutter-sdk/bin/flutter precache
 

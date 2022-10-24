@@ -1,0 +1,56 @@
+name: Build stable
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup buildx
+        uses: docker/setup-buildx-action@v1.6.0
+        with:
+          install: true
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push stable
+        run: |
+          docker build \
+            -t leobastiani/flutter:stable \
+            --cache-from=type=registry,ref=leobastiani/flutter-cache:stable \
+            --cache-to=type=registry,ref=leobastiani/flutter-cache:stable,mode=max \
+            --push \
+            --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x \
+            .
+      - name: Build and push sudo stable
+        run: |
+          docker build \
+            -t leobastiani/flutter-sudo:stable \
+            --push \
+            --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x \
+            -f Dockerfile.sudo \
+            .
+      - name: Get current version
+        run: echo "FLUTTER_VERSION=$(docker run --rm -it leobastiani/flutter:stable flutter --version | head -n1 | grep -E -o "([0-9]{1,}\.)+[0-9]{1,}")" >> $GITHUB_ENV
+      - name: Build and push with version
+        run: echo 'FROM --platform=$BUILDPLATFORM leobastiani/flutter:stable' | docker build \
+          -t leobastiani/flutter:$FLUTTER_VERSION \
+          --cache-from=type=registry,ref=leobastiani/flutter-cache:stable \
+          --cache-to=type=registry,ref=leobastiani/flutter-cache:stable,mode=max \
+          --push \
+          --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x \
+          -f - \
+          .
+      - name: Build and push sudo with version
+        run: echo 'FROM --platform=$BUILDPLATFORM leobastiani/flutter-sudo:stable' | docker build \
+          -t leobastiani/flutter-sudo:$FLUTTER_VERSION \
+          --cache-from=type=registry,ref=leobastiani/flutter-cache:stable \
+          --cache-to=type=registry,ref=leobastiani/flutter-cache:stable,mode=max \
+          --push \
+          --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x \
+          -f - \
+          .
